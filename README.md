@@ -109,13 +109,19 @@ Loss: `BCEWithLogitsLoss` with class weights for imbalance
 
 ## 🎯 Results
 
+> Trained on 36,464 samples · Evaluated on 7,814 test samples · Model: `bert-base-uncased` fine-tuned
+
 | Label | Precision | Recall | F1 |
 |---|---|---|---|
-| Depression | ~0.87 | ~0.85 | ~0.86 |
-| Anxiety | ~0.84 | ~0.82 | ~0.83 |
-| Suicidal | ~0.89 | ~0.88 | ~0.88 |
-| Stress | ~0.81 | ~0.79 | ~0.80 |
-| **Macro avg** | | | **~0.84** |
+| Depression | 0.98 | 0.97 | **0.97** |
+| Anxiety | 0.93 | 0.91 | **0.92** |
+| Suicidal | 0.71 | 0.79 | **0.75** |
+| Stress | 0.84 | 0.74 | **0.79** |
+| **Macro avg** | | | **0.8568** |
+| **AUC-ROC** | | | **0.9772** |
+| **Hamming Loss** | | | **0.0499** |
+
+> ⚡ Suicidal recall = 0.79 — model uses lower decision threshold (0.35) to prioritize catching real cases over avoiding false positives.
 
 ---
 
