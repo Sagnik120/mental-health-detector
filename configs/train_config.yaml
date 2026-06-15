@@ -1,0 +1,51 @@
+# configs/train_config.yaml
+# ─────────────────────────────────────────────────────────────
+# MindSignal — Training Configuration
+# ─────────────────────────────────────────────────────────────
+
+model:
+  name: "mental/mental-bert-base-uncased"
+  max_len: 256
+  dropout: 0.3
+  num_labels: 4
+  labels: ["depression", "anxiety", "suicidal", "stress"]
+
+data:
+  raw_path: "data/raw/Combined Data.csv"
+  processed_dir: "data/processed/"
+  test_size: 0.15
+  val_size: 0.15
+  random_seed: 42
+
+training:
+  batch_size: 16
+  epochs: 5
+  learning_rate: 2.0e-5
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  gradient_clip: 1.0
+  # MPS = Apple Silicon GPU, cuda = Nvidia, cpu = fallback
+  device: "auto"
+  # threshold per label for sigmoid output
+  thresholds:
+    depression: 0.5
+    anxiety: 0.5
+    suicidal: 0.35   # lower = higher recall = fewer missed cases
+    stress: 0.5
+  # focal loss params (handles class imbalance better than BCE)
+  focal_loss:
+    use: true
+    alpha: 0.25
+    gamma: 2.0
+
+logging:
+  wandb: false          # set true after wandb login
+  tensorboard: true
+  log_dir: "logs/"
+  save_every_n_epochs: 1
+
+output:
+  checkpoint_dir: "outputs/checkpoints/"
+  metrics_dir: "outputs/metrics/"
+  plots_dir: "outputs/plots/"
+  best_model_name: "best_model"
