@@ -24,8 +24,10 @@ from transformers import AutoTokenizer
 from src.models.mental_bert import MindSignalModel, get_device, load_model
 
 # ── Config ───────────────────────────────────────────────────────────────────
-MODEL_NAME  = os.getenv("MODEL_NAME", "mental/mental-bert-base-uncased")
-CKPT_PATH   = os.getenv("CHECKPOINT_PATH", "outputs/checkpoints/best_model.pt")
+MODEL_NAME  = os.getenv("MODEL_NAME", "bert-base-uncased")
+# Always resolve from project root regardless of where uvicorn is launched
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+CKPT_PATH   = os.getenv("CHECKPOINT_PATH", str(_PROJECT_ROOT / "outputs/checkpoints/best_model.pt"))
 MAX_LEN     = int(os.getenv("MAX_LEN", 256))
 LABELS      = ["depression", "anxiety", "suicidal", "stress"]
 THRESHOLDS  = {"depression": 0.5, "anxiety": 0.5, "suicidal": 0.35, "stress": 0.5}
@@ -38,6 +40,8 @@ _state = {}
 async def lifespan(app: FastAPI):
     """Load model on startup, cleanup on shutdown."""
     logger.info("Loading MindSignal model...")
+    logger.info(f"Checkpoint path: {CKPT_PATH}")
+    logger.info(f"Checkpoint exists: {Path(CKPT_PATH).exists()}")
     device = get_device()
 
     if Path(CKPT_PATH).exists():
@@ -116,8 +120,19 @@ def prob_to_severity(prob: float, threshold: float) -> str:
         return "severe"
 
 
+
+import re as _re
+
+def _clean_text(t: str) -> str:
+    t = t.lower()
+    t = _re.sub(r"http\S+|www\S+", "", t)
+    t = _re.sub(r"@\w+|#\w+", "", t)
+    t = _re.sub(r"[^a-z0-9\s\'.,!?]", " ", t)
+    return _re.sub(r"\s+", " ", t).strip()
+
 @torch.no_grad()
 def run_inference(text: str):
+    text = _clean_text(text)
     model     = _state["model"]
     tokenizer = _state["tokenizer"]
     device    = _state["device"]

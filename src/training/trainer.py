@@ -151,6 +151,7 @@ class Trainer:
             "model_state_dict": self.model.state_dict(),
             "optimizer_state_dict": self.optimizer.state_dict(),
             "metrics": metrics,
+            "model_name": self.config["model"]["name"],
         }
         path = self.checkpoint_dir / f"checkpoint_epoch_{epoch}.pt"
         torch.save(state, path)

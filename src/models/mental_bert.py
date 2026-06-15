@@ -77,12 +77,19 @@ def get_device():
     return device
 
 
-def load_model(checkpoint_path: str, model_name: str, num_labels: int = 4, device=None):
+def load_model(checkpoint_path: str, model_name: str = None, num_labels: int = 4, device=None):
     """Load a saved model checkpoint."""
     if device is None:
         device = get_device()
+    # Read checkpoint first to get the model_name used during training
+    state = torch.load(checkpoint_path, map_location="cpu")
+    # Use model_name from checkpoint if available, else fall back to argument
+    ckpt_model_name = state.get("model_name", model_name or "bert-base-uncased")
+    if model_name and model_name != ckpt_model_name:
+        logger.warning(f"model_name mismatch: checkpoint used {ckpt_model_name!r}, got {model_name!r}. Using checkpoint value.")
+    model_name = ckpt_model_name
+    logger.info(f"Loading architecture: {model_name}")
     model = MindSignalModel(model_name=model_name, num_labels=num_labels)
-    state = torch.load(checkpoint_path, map_location=device)
     model.load_state_dict(state["model_state_dict"])
     model.to(device)
     model.eval()
