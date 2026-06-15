@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  mindsignal-api:
+    build:
+      context: ../../
+      dockerfile: deployment/docker/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_NAME=mental/mental-bert-base-uncased
+      - CHECKPOINT_PATH=outputs/checkpoints/best_model.pt
+      - MAX_LEN=256
+    volumes:
+      - ../../outputs:/app/outputs:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
