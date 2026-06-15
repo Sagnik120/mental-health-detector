@@ -58,10 +58,27 @@ def load_and_map(raw_path: str) -> pd.DataFrame:
     logger.info(f"Raw rows: {len(df)}")
     logger.info(f"Raw label counts:\n{df['status'].value_counts().to_string()}")
 
+    # Normalize status: strip whitespace, fix known variations
+    df["status"] = df["status"].str.strip()
+
+    # Log any unmapped values before mapping
+    unmapped = set(df["status"].unique()) - set(LABEL_MAP.keys())
+    if unmapped:
+        logger.warning(f"Unmapped status values found (will be dropped): {unmapped}")
+
     # Map to multi-label
     label_rows = df["status"].map(LABEL_MAP)
-    label_df = pd.DataFrame(label_rows.tolist())
-    df = pd.concat([df[["text"]], label_df], axis=1)
+
+    # Drop rows where status didn't match any key (NaN rows)
+    valid_mask = label_rows.notna()
+    dropped = (~valid_mask).sum()
+    if dropped > 0:
+        logger.warning(f"Dropping {dropped} rows with unmapped status values")
+    df = df[valid_mask].copy()
+    label_rows = label_rows[valid_mask]
+
+    label_df = pd.DataFrame(label_rows.tolist(), index=df.index)
+    df = pd.concat([df[["text"]], label_df], axis=1).reset_index(drop=True)
 
     # Clean text
     logger.info("Cleaning text...")
@@ -73,7 +90,7 @@ def load_and_map(raw_path: str) -> pd.DataFrame:
     logger.info(f"After cleaning: {len(df)} rows")
     for label in LABELS:
         pct = df[label].mean() * 100
-        logger.info(f"  {label}: {df[label].sum()} positive ({pct:.1f}%)")
+        logger.info(f"  {label}: {int(df[label].sum())} positive ({pct:.1f}%)")
 
     return df
 
