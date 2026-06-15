@@ -1,0 +1,23 @@
+{
+  "depression_f1": 0.9741437967793151,
+  "depression_precision": 0.9819387288523092,
+  "depression_recall": 0.9664716471647165,
+  "depression_auc": 0.9947898944197091,
+  "anxiety_f1": 0.9191105381888495,
+  "anxiety_precision": 0.9308093994778068,
+  "anxiety_recall": 0.9077021005728835,
+  "anxiety_auc": 0.9891302319705645,
+  "suicidal_f1": 0.7455410225921522,
+  "suicidal_precision": 0.7096774193548387,
+  "suicidal_recall": 0.7852222917971196,
+  "suicidal_auc": 0.9441566939942583,
+  "stress_f1": 0.7882797731568998,
+  "stress_precision": 0.8407258064516129,
+  "stress_recall": 0.7419928825622776,
+  "stress_auc": 0.9806392837023239,
+  "macro_f1": 0.856768782679304,
+  "macro_precision": 0.865787838534142,
+  "macro_recall": 0.8503472305242493,
+  "hamming_loss": 0.0498784233427182,
+  "macro_auc": 0.9771790260217139
+}
