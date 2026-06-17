@@ -8,7 +8,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 ---
-
+ 
 ## 🚀 What Makes This Unique
 
 | Feature | Typical NLP Projects | MindSignal |
