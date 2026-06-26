@@ -55,6 +55,8 @@ Millions of people express signs of mental health struggles on social media long
 
 ## 🏗️ Architecture
 
+![Architecture Diagram](Architetural_diagram.png)
+
 ```
 Raw text
    │
